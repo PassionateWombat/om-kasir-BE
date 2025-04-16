@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,7 @@ Route::prefix('1.0.0')->group(function () {
         //     Route::get('/admin-only', fn() => ['message' => 'Hello Admin']);
         // });
         Route::apiResource('/products', ProductController::class);
+        Route::apiResource('/transactions', TransactionController::class);
     });
     // Route::apiResource('/products', ProductController::class);
 });
