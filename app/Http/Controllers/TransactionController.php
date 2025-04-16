@@ -52,17 +52,15 @@ class TransactionController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Validate input (simplify as needed)
             $validated = $request->validate([
                 'items' => 'required|array|min:1',
                 'items.*.product_id' => 'required|exists:products,id',
                 'items.*.quantity' => 'required|integer|min:1',
             ]);
 
-            // Create the transaction
             $transaction = Transaction::create([
                 'user_id' => Auth::id(),
-                'total_price' => 0, // temporary, we'll calculate next
+                'total_price' => 0,
             ]);
 
             $totalPrice = 0;
@@ -103,7 +101,11 @@ class TransactionController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $transaction = Transaction::with('items')->find($id);
+        if ($transaction->user_id != Auth::id()) {
+            return $this->error('Unauthorized transaction', 403);
+        }
+        return $this->success($transaction, 'Transaction retrieved successfully');
     }
 
     /**
@@ -112,6 +114,7 @@ class TransactionController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        return $this->error('Cannot update transaction.');
     }
 
     /**
@@ -120,5 +123,6 @@ class TransactionController extends Controller
     public function destroy(string $id)
     {
         //
+        return $this->error('Cannot delete transaction.');
     }
 }
