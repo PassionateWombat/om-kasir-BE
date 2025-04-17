@@ -4,13 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends Model
+class Transaction extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasUuids;
     protected $guarded = ['id'];
     protected $hidden = [
         'user_id',
     ];
+    public function items()
+    {
+        return $this->hasMany(TransactionItem::class);
+    }
 }

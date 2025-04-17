@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends Model
+class TransactionItem extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasUuids;
     protected $guarded = ['id'];
     protected $hidden = [
-        'user_id',
+        'created_at',
+        'updated_at',
+        'transaction_id'
     ];
 }

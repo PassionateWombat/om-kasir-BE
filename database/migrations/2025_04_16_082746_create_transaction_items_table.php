@@ -12,14 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('transaction_items', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
-            $table->string('name', 255);
+            $table->uuid('product_id');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('restrict');
+            $table->uuid('transaction_id');
+            $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('restrict');
+            $table->string('name');
             $table->double('price');
+            $table->integer('quantity');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('transaction_items');
     }
 };
