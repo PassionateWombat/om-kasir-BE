@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
@@ -20,6 +21,13 @@ Route::prefix('1.0.0')->group(function () {
         // });
         Route::apiResource('/products', ProductController::class);
         Route::apiResource('/transactions', TransactionController::class);
+        Route::prefix('analytics')->controller(AnalyticController::class)->group(function () {
+            Route::get('/sales-overview', 'salesOverview');
+            Route::get('/sales/daily', 'salesDaily');
+            Route::get('/sales/weekly', 'salesWeekly');
+            Route::get('/sales/monthly', 'salesMonthly');
+            Route::get('/sales/by-range', 'salesByRange');
+            Route::get('/products/top-selling', 'topSellingProducts');
+        });
     });
-    // Route::apiResource('/products', ProductController::class);
 });
