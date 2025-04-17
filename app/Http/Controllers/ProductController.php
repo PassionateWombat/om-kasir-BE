@@ -52,7 +52,21 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
         ]);
-        $validated['user_id'] = Auth::id();
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user) {
+            return $this->error('Unauthorized user', 403);
+        }
+
+        $user->load('roles');
+        if ($user->hasRole('free') && $user->products()->count() >= 10) {
+            return $this->error('Maximum 10 products allowed for free user', 400);
+        } elseif ($user->hasRole('premium') && $user->products()->count() >= 100) {
+            return $this->error('Maximum 100 products allowed for premium user', 400);
+        }
+
+        $validated['user_id'] = $user->id;
         return $this->success(Product::create($validated), 'Product created successfully');
     }
 
@@ -61,7 +75,6 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
         $product = Product::find($id);
         if ($product->user_id != Auth::id()) {
             return $this->error('Unauthorized product', 403);
@@ -74,8 +87,6 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
@@ -93,7 +104,6 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
         $product = Product::find($id);
         if ($product->user_id != Auth::id()) {
             return $this->error('Unauthorized product', 403);

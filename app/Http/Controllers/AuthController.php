@@ -31,7 +31,7 @@ class AuthController extends Controller
         $user->name = request()->name;
         $user->email = request()->email;
         $user->password = bcrypt(request()->password);
-        $user->assignRole(['user']);
+        $user->assignRole(['user', 'free']);
         $user->save();
         return $this->success($user, 'User registered successfully');
     }
