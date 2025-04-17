@@ -58,8 +58,18 @@ class TransactionController extends Controller
                 'items.*.quantity' => 'required|integer|min:1',
             ]);
 
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            if (!$user) {
+                return $this->error('Unauthorized user', 403);
+            }
+
+            $user->load('roles');
+            if ($user->hasRole('free') && $user->transactionsToday()->count() >= 100) {
+                return $this->error('Maximum 100 transactions allowed for free user', 400);
+            }
             $transaction = Transaction::create([
-                'user_id' => Auth::id(),
+                'user_id' => $user->id,
                 'total_price' => 0,
             ]);
 
@@ -82,7 +92,6 @@ class TransactionController extends Controller
                 ]);
             }
 
-            // Update total price now that we have all items
             $transaction->update([
                 'total_price' => $totalPrice,
             ]);
@@ -113,7 +122,6 @@ class TransactionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
         return $this->error('Cannot update transaction.');
     }
 
@@ -122,7 +130,6 @@ class TransactionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
         return $this->error('Cannot delete transaction.');
     }
 }

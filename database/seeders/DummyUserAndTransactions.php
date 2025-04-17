@@ -31,7 +31,7 @@ class DummyUserAndTransactions extends Seeder
             ]
         );
 
-        $user->assignRole('user'); // or your $userRole variable
+        $user->assignRole(['user', 'premium']); // or your $userRole variable
 
         // 2️⃣ Create Products with random names
         $products = collect();

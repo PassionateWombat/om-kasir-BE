@@ -18,6 +18,8 @@ class RoleAndUserSeeder extends Seeder
         // Create roles
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $userRole = Role::firstOrCreate(['name' => 'user']);
+        $freeTier = Role::firstOrCreate(['name' => 'free']);
+        $premiumTier = Role::firstOrCreate(['name' => 'premium']);
 
         // Create admin user
         $admin = User::firstOrCreate(
@@ -38,5 +40,16 @@ class RoleAndUserSeeder extends Seeder
             ]
         );
         $user->assignRole($userRole);
+        $user->assignRole($freeTier);
+
+        $user = User::firstOrCreate(
+            ['email' => 'premium@user'],
+            [
+                'name' => 'Premium User',
+                'password' => Hash::make('user'),
+            ]
+        );
+        $user->assignRole($userRole);
+        $user->assignRole($premiumTier);
     }
 }
