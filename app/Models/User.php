@@ -47,6 +47,8 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'premium_until' => 'datetime',
+            'banned_at' => 'datetime',
         ];
     }
 
@@ -71,9 +73,14 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function hasRole($roleName)
+    public function isPremium(): bool
     {
-        return $this->roles->contains('name', $roleName);
+        return $this->premium_until !== null && $this->premium_until->isFuture();
+    }
+
+    public function isBanned()
+    {
+        return !is_null($this->banned_at);
     }
 
     public function products()

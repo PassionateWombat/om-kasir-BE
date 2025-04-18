@@ -63,9 +63,7 @@ class TransactionController extends Controller
             if (!$user) {
                 return $this->error('Unauthorized user', 403);
             }
-
-            $user->load('roles');
-            if ($user->hasRole('free') && $user->transactionsToday()->count() >= 100) {
+            if (!$user->isPremium() && $user->transactionsToday()->count() >= 100) {
                 return $this->error('Maximum 100 transactions allowed for free user', 400);
             }
             $transaction = Transaction::create([

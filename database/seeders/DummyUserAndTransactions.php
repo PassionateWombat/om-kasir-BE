@@ -28,10 +28,11 @@ class DummyUserAndTransactions extends Seeder
             [
                 'name' => 'Gora Asep',
                 'password' => Hash::make('gora'),
+                'premium_until' => Carbon::now()->addMonths(1),  // Example: "Premium User" until next month
             ]
         );
 
-        $user->assignRole(['user', 'premium']); // or your $userRole variable
+        $user->assignRole(['user']); // or your $userRole variable
 
         // 2️⃣ Create Products with random names
         $products = collect();

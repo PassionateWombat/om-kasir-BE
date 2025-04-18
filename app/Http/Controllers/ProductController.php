@@ -58,13 +58,12 @@ class ProductController extends Controller
         if (!$user) {
             return $this->error('Unauthorized user', 403);
         }
-
-        $user->load('roles');
-        if ($user->hasRole('free') && $user->products()->count() >= 10) {
-            return $this->error('Maximum 10 products allowed for free user', 400);
-        } elseif ($user->hasRole('premium') && $user->products()->count() >= 100) {
+        if ($user->isPremium()  && $user->products()->count() >= 100) {
             return $this->error('Maximum 100 products allowed for premium user', 400);
+        } elseif (!$user->isPremium()  && $user->products()->count() >= 10) {
+            return $this->error('Maximum 10 products allowed for free user', 400);
         }
+
 
         $validated['user_id'] = $user->id;
         return $this->success(Product::create($validated), 'Product created successfully');
