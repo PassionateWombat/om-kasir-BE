@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -18,8 +19,6 @@ class RoleAndUserSeeder extends Seeder
         // Create roles
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $userRole = Role::firstOrCreate(['name' => 'user']);
-        $freeTier = Role::firstOrCreate(['name' => 'free']);
-        $premiumTier = Role::firstOrCreate(['name' => 'premium']);
 
         // Create admin user
         $admin = User::firstOrCreate(
@@ -40,16 +39,15 @@ class RoleAndUserSeeder extends Seeder
             ]
         );
         $user->assignRole($userRole);
-        $user->assignRole($freeTier);
 
         $user = User::firstOrCreate(
             ['email' => 'premium@user'],
             [
                 'name' => 'Premium User',
                 'password' => Hash::make('user'),
+                'premium_until' => Carbon::now()->addMonths(1),  // Example: "Premium User" until next month
             ]
         );
         $user->assignRole($userRole);
-        $user->assignRole($premiumTier);
     }
 }

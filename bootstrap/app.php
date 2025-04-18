@@ -26,22 +26,22 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json([
                     'status' => 'error',
                     'message' => $e->getMessage(),
-                    'data' => null
+                    'errors' => []
                 ], 401);
             }
         });
         $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'You do not have the required authorization.',
-                'data' => null
+                'message' => 'You do not have the required authorization. ' . $e->getMessage(),
+                'errors' => []
             ], 403);
         });
         $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Route not found, ' . $e->getMessage(),
-                'data' => null
+                'errors' => []
             ], 404);
         });
 
@@ -49,7 +49,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json([
                 'status' => 'error',
                 'message' => 'Something went wrong, ' . $e->getMessage(),
-                'data' => null
+                'errors' => []
             ], 500);
         });
     })->create();
