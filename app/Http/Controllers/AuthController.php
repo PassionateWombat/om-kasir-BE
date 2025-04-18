@@ -49,7 +49,17 @@ class AuthController extends Controller
         if (! $token = Auth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
         // $token = Auth::claims(['foo' => 'bar'])->attempt($credentials);
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        // Check if the user is banned
+        if ($user->isBanned()) {
+            Auth::logout();
+            return $this->error('Your account is banned until ' . $user->banned_at->toDateTimeString(), 403);
+        }
+
         return $this->success($this->respondWithToken($token)->original, 'Login successful');
     }
 
