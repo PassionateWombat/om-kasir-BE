@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnalyticController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckIfUserIsBanned;
@@ -26,6 +27,9 @@ Route::prefix('1.0.0')->group(function () {
             Route::get('/sales/by-range', 'salesByRange');
             Route::get('/products/top-selling', 'topSellingProducts');
         });
+
+        Route::get('/reports/sales', [SalesReportController::class, 'generate']);
+
         Route::middleware(['role:admin'])->group(function () {
             Route::post('/users/{id}/upgrade-premium', [UserController::class, 'upgradeToPremium']);
             Route::post('/users/{id}/downgrade', [UserController::class, 'downgrade']);
