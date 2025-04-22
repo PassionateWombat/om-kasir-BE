@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AnalyticController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SalesReportController;
 use App\Http\Controllers\TransactionController;
@@ -29,6 +30,12 @@ Route::prefix('1.0.0')->group(function () {
         });
 
         Route::get('/reports/sales', [SalesReportController::class, 'generate']);
+
+        Route::prefix('user')->group(function () {
+            Route::post('/upgrade-premium', [PaymentController::class, 'selfUpgrade']);
+            Route::post('/validate-payment', [PaymentController::class, 'validatePayment']);
+        });
+
 
         Route::middleware(['role:admin'])->group(function () {
             Route::post('/users/{id}/upgrade-premium', [UserController::class, 'upgradeToPremium']);
