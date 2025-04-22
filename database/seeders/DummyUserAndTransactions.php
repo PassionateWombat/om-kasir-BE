@@ -24,7 +24,7 @@ class DummyUserAndTransactions extends Seeder
 
         // 1️⃣ Create User
         $user = User::firstOrCreate(
-            ['email' => 'gora@gora'],
+            ['email' => 'gora@gora.com'],
             [
                 'name' => 'Gora Asep',
                 'password' => Hash::make('gora'),

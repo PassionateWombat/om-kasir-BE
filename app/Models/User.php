@@ -78,6 +78,17 @@ class User extends Authenticatable implements JWTSubject
         return $this->premium_until !== null && $this->premium_until->isFuture();
     }
 
+    public function upgradeToPremium($months)
+    {
+        if ($this->premium_until !== null && $this->premium_until->isFuture()) {
+            $this->premium_until = $this->premium_until->addMonths($months);
+        } else {
+            $this->premium_until = Carbon::now()->addMonths($months);
+        }
+        $this->save();
+        return true;
+    }
+
     public function isBanned()
     {
         return !is_null($this->banned_at);
