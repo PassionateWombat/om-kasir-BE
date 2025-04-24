@@ -14,8 +14,11 @@ Route::prefix('1.0.0')->group(function () {
     Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('/register', 'register')->name('register');
         Route::post('/login', 'login')->name('login');
-        Route::post('/logout', 'logout')->middleware('auth:api')->name('logout');
-        Route::post('/me', 'me')->middleware('auth:api')->name('me');
+        Route::middleware(['auth:api'])->group(function () {
+            Route::post('/refresh', 'refresh')->middleware('auth:api')->name('refresh');
+            Route::post('/logout', 'logout')->middleware('auth:api')->name('logout');
+            Route::post('/me', 'me')->middleware('auth:api')->name('me');
+        });
     });
     Route::middleware(['auth:api', CheckIfUserIsBanned::class])->group(function () {
         Route::apiResource('/products', ProductController::class);
