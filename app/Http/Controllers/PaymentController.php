@@ -54,7 +54,7 @@ class PaymentController extends Controller
             "item_details" => [
                 [
                     "id" => "1",
-                    "price" => 10000,
+                    "price" => 10000 * $durationMonths,
                     "quantity" => 1,
                     "name" => "OmKasirPOS " . $durationMonths . " Month(s) Premium Pass",
                     "brand" => "OmKasirPOS",

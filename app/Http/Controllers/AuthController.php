@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Traits\ApiResponseTrait;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -46,9 +47,18 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = Auth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+            return $this->error('Unauthorized', 401);
         }
+        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        $guard = Auth::guard('api');
+        $token = $guard->claims([
+            'scope' => implode(' ', $user->roles()->pluck('name')->toArray()),
+            'userId' => $user->id,
+            'email' => $user->email,
+        ])->login($user);
 
         // $token = Auth::claims(['foo' => 'bar'])->attempt($credentials);
 
