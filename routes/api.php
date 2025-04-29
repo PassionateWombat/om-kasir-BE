@@ -20,6 +20,12 @@ Route::prefix('1.0.0')->group(function () {
             Route::post('/me', 'me')->middleware('auth:api')->name('me');
         });
     });
+
+    Route::prefix('profile')->controller(UserController::class)->group(function () {
+        Route::get('/', 'profile');
+        Route::post('/update-username', 'updateUsername');
+    });
+
     Route::middleware(['auth:api', CheckIfUserIsBanned::class])->group(function () {
         Route::apiResource('/products', ProductController::class);
         Route::apiResource('/transactions', TransactionController::class);

@@ -6,6 +6,7 @@ use App\Http\Traits\ApiResponseTrait;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -103,5 +104,16 @@ class UserController extends Controller
         $user->save();
 
         return $this->success('User has been lifted from ban.');
+    }
+
+    public function profile(){
+        return $this->success(Auth::user(), 'User information');
+    }
+
+    public function updateUsername(Request $request){
+        $user = Auth::user();
+        $user->name = $request->name;
+        $user->save();
+        return $this->success($user, 'Username updated successfully');
     }
 }
