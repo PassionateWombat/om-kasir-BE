@@ -12,6 +12,38 @@ use Illuminate\Support\Facades\File;
 class UserController extends Controller
 {
     use ApiResponseTrait;
+
+    public function index(Request $request)
+    {
+        $start = (int) $request->get('start', 0);
+        $length = (int) $request->get('length', 10);
+        $order = $request->get('order', 'asc');
+        $field = $request->get('field', 'id');
+        $search = $request->get('search', '');
+
+        $query = User::query()->with('roles');
+
+        if (!empty($search)) {
+            $query->where('name', 'like', "%{$search}%");
+            $query->orWhere('email', 'like', "%{$search}%");
+        }
+
+        $filtered = $query->count();
+
+        $users = $query->orderBy($field, $order)
+            ->skip($start)
+            ->take($length)
+            ->get();
+
+        $total = User::count();
+
+        return $this->success([
+            'recordsTotal' => $total,
+            'recordsFiltered' => $filtered,
+            'data' => $users,
+        ], 'Users retrieved successfully');
+    }
+
     /**
      * Upgrade user to premium (duration-based or until specific date).
      */
