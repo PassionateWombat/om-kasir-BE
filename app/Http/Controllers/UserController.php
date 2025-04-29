@@ -126,7 +126,7 @@ class UserController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $uploadPath = public_path('profiles');
+        $uploadPath = public_path('storage/profiles');
 
         if (!File::exists($uploadPath)) {
             File::makeDirectory($uploadPath, 0755, true);
@@ -150,7 +150,7 @@ class UserController extends Controller
         }
 
         $host = $request->getSchemeAndHttpHost();
-        $user->profile_image = $host . '/profiles/' . $imageName;
+        $user->profile_image = $host . '/storage/profiles/' . $imageName;
         $user->save();
 
         return $this->success($user->profile_image, 'Profile image updated successfully');
