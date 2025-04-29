@@ -29,6 +29,7 @@ Route::prefix('1.0.0')->group(function () {
 
     Route::middleware(['auth:api', CheckIfUserIsBanned::class])->group(function () {
         Route::apiResource('/products', ProductController::class);
+        Route::post('/products/{id}/update-image', [ProductController::class, 'updateImage']);
         Route::apiResource('/transactions', TransactionController::class);
         Route::prefix('analytics')->controller(AnalyticController::class)->group(function () {
             Route::get('/sales-overview', 'salesOverview');
