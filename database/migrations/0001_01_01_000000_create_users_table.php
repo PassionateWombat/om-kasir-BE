@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamp('banned_at')->nullable();
             $table->string('ban_reason')->nullable();
             $table->string('password');
+            $table->string('profile_image')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

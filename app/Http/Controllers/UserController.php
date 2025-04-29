@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
@@ -106,14 +107,52 @@ class UserController extends Controller
         return $this->success('User has been lifted from ban.');
     }
 
-    public function profile(){
+    public function profile()
+    {
         return $this->success(Auth::user(), 'User information');
     }
 
-    public function updateUsername(Request $request){
+    public function updateUsername(Request $request)
+    {
         $user = Auth::user();
         $user->name = $request->name;
         $user->save();
         return $this->success($user, 'Username updated successfully');
+    }
+
+    public function updateProfileImage(Request $request)
+    {
+        $validated = $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $uploadPath = public_path('profiles');
+
+        if (!File::exists($uploadPath)) {
+            File::makeDirectory($uploadPath, 0755, true);
+        }
+
+        $imageName = time() . '.' . $validated['image']->extension();
+
+        try {
+            $validated['image']->move($uploadPath, $imageName);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage());
+        }
+
+        $user = Auth::user();
+
+        if ($user->profile_image) {
+            $oldImagePath = public_path(parse_url($user->profile_image, PHP_URL_PATH));
+            if (File::exists($oldImagePath)) {
+                File::delete($oldImagePath);
+            }
+        }
+
+        $host = $request->getSchemeAndHttpHost();
+        $user->profile_image = $host . '/profiles/' . $imageName;
+        $user->save();
+
+        return $this->success($user->profile_image, 'Profile image updated successfully');
     }
 }

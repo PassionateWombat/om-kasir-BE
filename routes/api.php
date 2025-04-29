@@ -24,6 +24,7 @@ Route::prefix('1.0.0')->group(function () {
     Route::prefix('profile')->controller(UserController::class)->group(function () {
         Route::get('/', 'profile');
         Route::post('/update-username', 'updateUsername');
+        Route::post('/update-image', 'updateProfileImage');
     });
 
     Route::middleware(['auth:api', CheckIfUserIsBanned::class])->group(function () {
