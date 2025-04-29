@@ -49,6 +49,7 @@ Route::prefix('1.0.0')->group(function () {
 
 
         Route::middleware(['role:admin'])->group(function () {
+            Route::get('/users', [UserController::class, 'index']);
             Route::post('/users/{id}/upgrade-premium', [UserController::class, 'upgradeToPremium']);
             Route::post('/users/{id}/downgrade', [UserController::class, 'downgrade']);
             Route::post('/users/{id}/ban', [UserController::class, 'ban']);
