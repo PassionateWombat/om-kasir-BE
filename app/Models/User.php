@@ -99,6 +99,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Product::class);
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
     public function transactionsToday()
     {
         return $this->transactions()->whereDate('created_at', Carbon::today())->get();
