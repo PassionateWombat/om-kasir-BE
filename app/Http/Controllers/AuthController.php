@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -52,13 +53,19 @@ class AuthController extends Controller
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             return $this->error('Unauthorized', 401);
         }
+        $claims = [
+            'scope' => implode(' ', $user->roles()->pluck('name')->toArray()),
+            'userId' => $user->id,
+            'email' => $user->email,
+        ];
         /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
         $guard = Auth::guard('api');
         $token = $guard->claims([
             'scope' => implode(' ', $user->roles()->pluck('name')->toArray()),
             'userId' => $user->id,
             'email' => $user->email,
-        ])->login($user);
+        ])->setTTL(60)->login($user);
+        // $token = JWTAuth::setTTL(1)->claims($claims)->login($user);
 
         // $token = Auth::claims(['foo' => 'bar'])->attempt($credentials);
 
@@ -101,7 +108,9 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->success($this->respondWithToken(Auth::refresh())->original, 'Refresh token successful');
+        Auth::factory()->setTTL(60);
+        $token = Auth::refresh();
+        return $this->success($this->respondWithToken($token)->original, 'Refresh token successful');
     }
 
     /**

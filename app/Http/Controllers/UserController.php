@@ -33,7 +33,9 @@ class UserController extends Controller
         $users = $query->orderBy($field, $order)
             ->skip($start)
             ->take($length)
-            ->get();
+            ->get()->each(function ($user) {
+                $user->roles->each->makeHidden('pivot');
+            });;
 
         $total = User::count();
 
@@ -110,13 +112,16 @@ class UserController extends Controller
      */
     public function ban($id)
     {
+        $validated = request()->validate([
+            'ban_reason' => 'required|string',
+        ]);
         $user = User::find($id);
-
         if (!$user) {
             return $this->error('User not found.', 404);
         }
 
         $user->banned_at = Carbon::now();
+        $user->ban_reason = $validated['ban_reason'];
         $user->save();
 
         return $this->success('User has been banned.');
@@ -134,6 +139,7 @@ class UserController extends Controller
         }
 
         $user->banned_at = null;
+        $user->ban_reason = null;
         $user->save();
 
         return $this->success('User has been lifted from ban.');
