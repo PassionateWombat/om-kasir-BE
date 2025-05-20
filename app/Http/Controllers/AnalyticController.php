@@ -31,8 +31,8 @@ class AnalyticController extends Controller
 
     public function salesDaily(Request $request)
     {
-        $start = Carbon::now()->startOfMonth();
-        $end = Carbon::now();
+        $start = $request->query('start_date', Carbon::now()->startOfMonth());
+        $end = $request->query('end_date', Carbon::now());
 
         $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('DATE(created_at) as date'),
@@ -48,8 +48,8 @@ class AnalyticController extends Controller
 
     public function salesWeekly(Request $request)
     {
-        $start = Carbon::now()->startOfQuarter();
-        $end = Carbon::now();
+        $start = $request->query('start_date', Carbon::now()->startOfQuarter());
+        $end = $request->query('end_date', Carbon::now());
 
         $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('YEARWEEK(created_at, 1) as week'),
@@ -65,8 +65,8 @@ class AnalyticController extends Controller
 
     public function salesMonthly(Request $request)
     {
-        $start = Carbon::now()->startOfYear();
-        $end = Carbon::now();
+        $start = $request->query('start_date', Carbon::now()->startOfYear());
+        $end = $request->query('end_date', Carbon::now());
 
         $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
