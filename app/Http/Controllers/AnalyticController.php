@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AnalyticController extends Controller
@@ -17,8 +18,8 @@ class AnalyticController extends Controller
         $start = $request->query('start_date', Carbon::now()->startOfMonth());
         $end = $request->query('end_date', Carbon::now());
 
-        $totalSales = Transaction::whereBetween('created_at', [$start, $end])->sum('total_price');
-        $totalTransactions = Transaction::whereBetween('created_at', [$start, $end])->count();
+        $totalSales = Transaction::where('user_id', Auth::id())->whereBetween('created_at', [$start, $end])->sum('total_price');
+        $totalTransactions = Transaction::where('user_id', Auth::id())->whereBetween('created_at', [$start, $end])->count();
         $averageOrderValue = $totalTransactions > 0 ? $totalSales / $totalTransactions : 0;
 
         return $this->success([
@@ -33,7 +34,7 @@ class AnalyticController extends Controller
         $start = Carbon::now()->startOfMonth();
         $end = Carbon::now();
 
-        $sales = Transaction::select(
+        $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('DATE(created_at) as date'),
             DB::raw('SUM(total_price) as total')
         )
@@ -50,7 +51,7 @@ class AnalyticController extends Controller
         $start = Carbon::now()->startOfQuarter();
         $end = Carbon::now();
 
-        $sales = Transaction::select(
+        $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('YEARWEEK(created_at, 1) as week'),
             DB::raw('SUM(total_price) as total')
         )
@@ -67,7 +68,7 @@ class AnalyticController extends Controller
         $start = Carbon::now()->startOfYear();
         $end = Carbon::now();
 
-        $sales = Transaction::select(
+        $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
             DB::raw('SUM(total_price) as total')
         )
@@ -84,7 +85,7 @@ class AnalyticController extends Controller
         $start = $request->query('start_date', Carbon::now()->startOfMonth());
         $end = $request->query('end_date', Carbon::now());
 
-        $sales = Transaction::select(
+        $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('DATE(created_at) as date'),
             DB::raw('SUM(total_price) as total')
         )
@@ -101,7 +102,7 @@ class AnalyticController extends Controller
         $start = $request->query('start_date', Carbon::now()->startOfMonth());
         $end = $request->query('end_date', Carbon::now());
 
-        $products = TransactionItem::select(
+        $products = TransactionItem::where('user_id', Auth::id())->select(
             'product_id',
             DB::raw('SUM(quantity) as total_sold'),
             DB::raw('SUM(quantity * price) as total_revenue')
