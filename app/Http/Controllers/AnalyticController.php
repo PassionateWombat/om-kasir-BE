@@ -102,17 +102,19 @@ class AnalyticController extends Controller
         $start = $request->query('start_date', Carbon::now()->startOfMonth());
         $end = $request->query('end_date', Carbon::now());
 
-        $products = TransactionItem::where('user_id', Auth::id())->select(
+        $products = TransactionItem::select(
             'product_id',
-            DB::raw('SUM(quantity) as total_sold'),
-            DB::raw('SUM(quantity * price) as total_revenue')
+            DB::raw('SUM(transaction_items.quantity) as total_sold'),
+            DB::raw('SUM(transaction_items.quantity * transaction_items.price) as total_revenue')
         )
-            ->whereBetween('created_at', [$start, $end])
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->where('transactions.user_id', Auth::id())
+            ->whereBetween('transaction_items.created_at', [$start, $end])
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
-            ->limit(10)
-            ->with('product:id,name') // model relation needed
+            ->with('product:id,name') // assumes relationship exists
             ->get();
+
 
         return $this->success($products, 'Top selling products retrieved successfully');
     }

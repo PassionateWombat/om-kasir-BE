@@ -35,20 +35,22 @@ class SalesReportController extends Controller
 
         // Top 5 products
         $topProducts = DB::table('transaction_items')
-            ->where('user_id', Auth::id())
-            ->select('name', DB::raw('SUM(quantity) as total_sold'))
-            ->whereBetween('created_at', [$from, $to])
-            ->groupBy('name')
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->select('transaction_items.name', DB::raw('SUM(transaction_items.quantity) as total_sold'))
+            ->where('transactions.user_id', Auth::id())
+            ->whereBetween('transaction_items.created_at', [$from, $to])
+            ->groupBy('transaction_items.name')
             ->orderByDesc('total_sold')
             ->limit(5)
             ->get();
 
         // Pie Chart Data: Product distribution
         $productSales = DB::table('transaction_items')
-            ->where('user_id', Auth::id())
-            ->select('name', DB::raw('SUM(quantity) as total_sold'))
-            ->whereBetween('created_at', [$from, $to])
-            ->groupBy('name')
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->select('transaction_items.name', DB::raw('SUM(transaction_items.quantity) as total_sold'))
+            ->where('transactions.user_id', Auth::id())
+            ->whereBetween('transaction_items.created_at', [$from, $to])
+            ->groupBy('transaction_items.name')
             ->get();
 
         $pieLabels = $productSales->pluck('name')->toArray();
