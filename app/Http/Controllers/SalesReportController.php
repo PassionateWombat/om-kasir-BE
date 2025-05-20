@@ -16,8 +16,13 @@ class SalesReportController extends Controller
     use ApiResponseTrait;
     public function generate(Request $request)
     {
-        $from = $request->query('from');
-        $to = $request->query('to');
+        $from = $request->query('from')
+            ? Carbon::parse($request->query('from'))->startOfDay()
+            : Carbon::now()->startOfMonth();
+
+        $to = $request->query('to')
+            ? Carbon::parse($request->query('to'))->endOfDay()
+            : Carbon::now()->endOfDay();
 
         if (!$from || !$to) {
             return $this->error('Please provide both "from" and "to" date parameters.');

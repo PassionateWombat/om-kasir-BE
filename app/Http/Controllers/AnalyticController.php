@@ -16,7 +16,10 @@ class AnalyticController extends Controller
     public function salesOverview(Request $request)
     {
         $start = $request->query('start_date', Carbon::now()->startOfMonth());
-        $end = $request->query('end_date', Carbon::now());
+        $end = $request->query('end_date')
+            ? Carbon::parse($request->query('end_date'))->endOfDay()
+            : Carbon::now()->endOfDay();
+
 
         $totalSales = Transaction::where('user_id', Auth::id())->whereBetween('created_at', [$start, $end])->sum('total_price');
         $totalTransactions = Transaction::where('user_id', Auth::id())->whereBetween('created_at', [$start, $end])->count();
@@ -32,7 +35,10 @@ class AnalyticController extends Controller
     public function salesDaily(Request $request)
     {
         $start = $request->query('start_date', Carbon::now()->startOfMonth());
-        $end = $request->query('end_date', Carbon::now());
+        $end = $request->query('end_date')
+            ? Carbon::parse($request->query('end_date'))->endOfDay()
+            : Carbon::now()->endOfDay();
+
 
         $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('DATE(created_at) as date'),
@@ -49,7 +55,10 @@ class AnalyticController extends Controller
     public function salesWeekly(Request $request)
     {
         $start = $request->query('start_date', Carbon::now()->startOfQuarter());
-        $end = $request->query('end_date', Carbon::now());
+        $end = $request->query('end_date')
+            ? Carbon::parse($request->query('end_date'))->endOfDay()
+            : Carbon::now()->endOfDay();
+
 
         $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('YEARWEEK(created_at, 1) as week'),
@@ -66,7 +75,10 @@ class AnalyticController extends Controller
     public function salesMonthly(Request $request)
     {
         $start = $request->query('start_date', Carbon::now()->startOfYear());
-        $end = $request->query('end_date', Carbon::now());
+        $end = $request->query('end_date')
+            ? Carbon::parse($request->query('end_date'))->endOfDay()
+            : Carbon::now()->endOfDay();
+
 
         $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
@@ -83,7 +95,10 @@ class AnalyticController extends Controller
     public function salesByRange(Request $request)
     {
         $start = $request->query('start_date', Carbon::now()->startOfMonth());
-        $end = $request->query('end_date', Carbon::now());
+        $end = $request->query('end_date')
+            ? Carbon::parse($request->query('end_date'))->endOfDay()
+            : Carbon::now()->endOfDay();
+
 
         $sales = Transaction::where('user_id', Auth::id())->select(
             DB::raw('DATE(created_at) as date'),
@@ -100,7 +115,10 @@ class AnalyticController extends Controller
     public function topSellingProducts(Request $request)
     {
         $start = $request->query('start_date', Carbon::now()->startOfMonth());
-        $end = $request->query('end_date', Carbon::now());
+        $end = $request->query('end_date')
+            ? Carbon::parse($request->query('end_date'))->endOfDay()
+            : Carbon::now()->endOfDay();
+
 
         $products = TransactionItem::select(
             'product_id',
